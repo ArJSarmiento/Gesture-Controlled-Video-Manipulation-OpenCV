@@ -32,6 +32,8 @@ class Ui_MainWindow(object):
         self.contrast_value_now = None
 
         self.__image_processing_technique = ImageProcessingTechnique.BRIGHTNESS
+        self.last_length = 0
+        self.max_length = 0
 
         self.__video_controller = VideoController()
         self.__hand_detector = HandDetector(detection_con=0.7)
@@ -513,6 +515,12 @@ class Ui_MainWindow(object):
             angle_bar = np.interp(length, [min_hand, max_hand], [400, 150])
             angle_deg = np.interp(length, [min_hand, max_hand], [0, 180])
 
+            print(f'Current length {length}')
+            print(f'Last length {self.last_length}')
+            self.last_length = length
+            self.max_length = max(self.max_length, length)
+            self.gesture_handler()
+
             # Draw green circle if length is below threshold
             if length < 50:
                 cv2.circle(img, (cx, cy), 15, (0, 255, 0), cv2.FILLED)
@@ -524,8 +532,22 @@ class Ui_MainWindow(object):
 
         self.setPhoto(img)
 
+    def gesture_handler(self):
+        computed_value = int(100 * self.last_length / self.max_length)
+        if self.__image_processing_technique == ImageProcessingTechnique.BRIGHTNESS:
+            self.brightness_value(computed_value)
+        elif self.__image_processing_technique == ImageProcessingTechnique.BLUR:
+            self.blur_value(computed_value)
+        elif self.__image_processing_technique == ImageProcessingTechnique.SATURATION:
+            self.saturation_value(computed_value)
+        elif self.__image_processing_technique == ImageProcessingTechnique.SHARPENING:
+            self.onSharpeningSliderChanged(computed_value)
+        elif self.__image_processing_technique == ImageProcessingTechnique.CONTRAST:
+            self.onContrastSliderChanged(computed_value)
+
     def __set_image_processing_technique_gesture(self, technique: ImageProcessingTechnique):
         print(f"Setting gesture for {technique}")
+        self.reset_parameters()
         self.__image_processing_technique = technique
 
     def set_gesture_brightness(self):
@@ -543,13 +565,10 @@ class Ui_MainWindow(object):
     def set_gesture_contrast(self):
         self.__set_image_processing_technique_gesture(ImageProcessingTechnique.CONTRAST)
 
-if __name__ == "__main__":
-    import sys
-
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    ui.loadImage()
-    sys.exit(app.exec_())
+    def reset_parameters(self):
+        self.brightness_value_now = self.default_brightness_value_now
+        self.blur_value_now = self.default_blur_value_now
+        self.saturation_value_now = self.default_saturation_value_now
+        self.sharpening_value_now = self.default_sharpening_value_now
+        self.contrast_value_now = self.default_contrast_value_now
+        self.update()
