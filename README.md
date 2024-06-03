@@ -6,7 +6,7 @@
 Step 1:
 Clone this repository on your local computer
 
-`git clone 
+`git clone
 
 Step 2:
 Install all the requirements
