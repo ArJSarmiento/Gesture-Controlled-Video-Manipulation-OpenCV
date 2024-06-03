@@ -9,7 +9,6 @@ import math
 
 import cv2
 import numpy as np
-
 from hand_tracking import HandDetector
 
 # Camera resolution

@@ -5,10 +5,9 @@ import cv2
 import imutils
 import numpy as np
 import pyshine as ps
+from hand_tracking import HandDetector
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QImage
-
-from hand_tracking import HandDetector
 from video_controller import VideoController
 
 try:
@@ -67,14 +66,17 @@ class Ui_MainWindow(object):
         self.imageProcessingTechniqueContainer.setObjectName("imageProcessingTechniqueContainer")
         self.gridLayout = QtWidgets.QGridLayout(self.imageProcessingTechniqueContainer)
         self.gridLayout.setObjectName("gridLayout")
+
         self.ImageBlur = QtWidgets.QFrame(self.imageProcessingTechniqueContainer)
         self.ImageBlur.setStyleSheet("")
         self.ImageBlur.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.ImageBlur.setFrameShadow(QtWidgets.QFrame.Raised)
         self.ImageBlur.setObjectName("ImageBlur")
+
         self.label_2 = QtWidgets.QLabel(self.ImageBlur)
         self.label_2.setGeometry(QtCore.QRect(10, 10, 100, 16))
         self.label_2.setObjectName("label_2")
+
         self.imageBlurSlider = QtWidgets.QSlider(self.ImageBlur)
         self.imageBlurSlider.setGeometry(QtCore.QRect(10, 30, 100, 16))
         self.imageBlurSlider.setStyleSheet(
@@ -127,6 +129,7 @@ class Ui_MainWindow(object):
         self.saturationSlider.valueChanged['int'].connect(self.saturation_value)
 
         self.gridLayout.addWidget(self.Saturation, 0, 1, 1, 1)
+
         self.ImageBrightness = QtWidgets.QFrame(self.imageProcessingTechniqueContainer)
         self.ImageBrightness.setStyleSheet("")
         self.ImageBrightness.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -159,6 +162,7 @@ class Ui_MainWindow(object):
         self.brightnessSlider.valueChanged['int'].connect(self.brightness_value)
 
         self.gridLayout.addWidget(self.ImageBrightness, 0, 2, 1, 1)
+
         self.ImageNoise = QtWidgets.QFrame(self.imageProcessingTechniqueContainer)
         self.ImageNoise.setStyleSheet("")
         self.ImageNoise.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -169,14 +173,7 @@ class Ui_MainWindow(object):
         self.label_5.setGeometry(QtCore.QRect(10, 10, 100, 16))
         self.label_5.setObjectName("label_5")
 
-        self.frame_4 = QtWidgets.QFrame(self.ImageNoise)
-        self.frame_4.setGeometry(QtCore.QRect(10, 30, 100, 60))
-        self.frame_4.setMinimumSize(QtCore.QSize(50, 50))
-        self.frame_4.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.frame_4.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.frame_4.setObjectName("frame_4")
-
-        self.contrastSlider = QtWidgets.QSlider(self.frame_4)
+        self.contrastSlider = QtWidgets.QSlider(self.ImageNoise)
         self.contrastSlider.setGeometry(QtCore.QRect(10, 30, 100, 16))
         self.contrastSlider.setStyleSheet(
             "QSlider::handle:horizontal {\n"
@@ -194,10 +191,11 @@ class Ui_MainWindow(object):
             ""
         )
         self.contrastSlider.setOrientation(QtCore.Qt.Horizontal)
-        self.contrastSlider.setObjectName("brightnessSlider")
+        self.contrastSlider.setObjectName("contrastSlider")
         self.contrastSlider.valueChanged['int'].connect(self.contrast_value)
 
         self.gridLayout.addWidget(self.ImageNoise, 0, 3, 1, 1)
+
         self.GrayScale = QtWidgets.QFrame(self.imageProcessingTechniqueContainer)
         self.GrayScale.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.GrayScale.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -244,18 +242,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
 
-        self.openButton = QtWidgets.QPushButton(self.centralwidget)
-        self.openButton.setObjectName("startVideo")
-        self.openButton.clicked.connect(self.loadImage)
-        self.horizontalLayout_2.addWidget(self.openButton)
-
-        self.takePhoto = QtWidgets.QPushButton(self.centralwidget)
-        self.takePhoto.setObjectName("takePhoto")
-        self.takePhoto.clicked.connect(self.savePhoto)
-        self.horizontalLayout_2.addWidget(self.takePhoto)
-
         self.gridLayout_2 = QtWidgets.QGridLayout(self.centralwidget)
-        self.horizontalLayout_2.addWidget(self.takePhoto)
         self.gridLayout_2.addLayout(self.horizontalLayout_2, 1, 0, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(313, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_2.addItem(spacerItem, 1, 1, 1, 1)
@@ -365,9 +352,10 @@ class Ui_MainWindow(object):
 
     def saturation_value(self, value):
         """This function will take value from the slider
-        for the saturation from 0 to 99"""
-        self.saturation_value_now = max(self.default_saturation_value_now, value)
-        print('Saturation: ', value)
+        for the saturation from 0.0 to 1.5"""
+        computed_value = 1.5 * value / 100
+        self.saturation_value_now = min(max(0, computed_value), 1.5)  # between 0.0 and 1.5
+        print('Saturation: ', computed_value)
         self.update()
 
     def onSharpeningSliderChanged(self, value):
@@ -444,12 +432,6 @@ class Ui_MainWindow(object):
 
         self.setPhoto(img)
 
-    def savePhoto(self):
-        """This function will save the image"""
-        self.filename = 'Snapshot ' + str(time.strftime("%Y-%b-%d at %H.%M.%S %p")) + '.png'
-        cv2.imwrite(self.filename, self.tmp)
-        print('Image saved as:', self.filename)
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "PyShine video process"))
@@ -464,9 +446,7 @@ class Ui_MainWindow(object):
         self.actionOpen_Image.setText(_translate("MainWindow", "Open Image"))
         self.actionOpen_Image.setToolTip(_translate("MainWindow", "Open Image"))
         self.startVideo.setText(_translate("MainWindow", "Open Image"))
-        self.takePhoto.setText(_translate("MainWindow", "Take Photo"))
         self.actionSaveEdit.setText(_translate("MainWindow", "Save Edit"))
-        self.openButton.setText(_translate("MainWindow", "Open"))
 
     def hand_tracking_handler(self):
         # Angle and length variables
@@ -517,4 +497,5 @@ if __name__ == "__main__":
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
+    ui.loadImage()
     sys.exit(app.exec_())
