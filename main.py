@@ -1,8 +1,8 @@
 """
-Final Project for Computer Vision
-Arnel Jan Sarmiento
-BSCS - 3
-2021-05094
+    Final Project for Computer Vision
+    Arnel Jan Sarmiento
+    BSCS - 3
+    2021-05094
 """
 
 import math
