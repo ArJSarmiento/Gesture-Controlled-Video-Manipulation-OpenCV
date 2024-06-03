@@ -5,6 +5,7 @@ import cv2
 import imutils
 import numpy as np
 import pyshine as ps
+from constants import ImageProcessingTechnique
 from hand_tracking import HandDetector
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QImage
@@ -29,6 +30,8 @@ class Ui_MainWindow(object):
         self.saturation_value_now = None
         self.sharpening_value_now = None
         self.contrast_value_now = None
+
+        self.__image_processing_technique = ImageProcessingTechnique.BRIGHTNESS
 
         self.__video_controller = VideoController()
         self.__hand_detector = HandDetector(detection_con=0.7)
@@ -67,6 +70,7 @@ class Ui_MainWindow(object):
         self.gridLayout = QtWidgets.QGridLayout(self.imageProcessingTechniqueContainer)
         self.gridLayout.setObjectName("gridLayout")
 
+        # Image processing technique Blur===============================================================
         self.ImageBlur = QtWidgets.QFrame(self.imageProcessingTechniqueContainer)
         self.ImageBlur.setStyleSheet("")
         self.ImageBlur.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -75,6 +79,7 @@ class Ui_MainWindow(object):
 
         self.label_2 = QtWidgets.QLabel(self.ImageBlur)
         self.label_2.setGeometry(QtCore.QRect(10, 10, 100, 16))
+        self.label_2.setObjectName("label_2")
         self.label_2.setObjectName("label_2")
 
         self.imageBlurSlider = QtWidgets.QSlider(self.ImageBlur)
@@ -98,7 +103,13 @@ class Ui_MainWindow(object):
         self.imageBlurSlider.setObjectName("imageBlurSlider")
         self.imageBlurSlider.valueChanged['int'].connect(self.blur_value)
 
+        self.imageBlurGesture = QtWidgets.QPushButton(self.ImageBlur)
+        self.imageBlurGesture.setGeometry(QtCore.QRect(10, 50, 100, 16))
+        self.imageBlurGesture.clicked.connect(self.set_gesture_blur)
+
         self.gridLayout.addWidget(self.ImageBlur, 0, 0, 1, 1)
+
+        # Image processing technique Saturation===============================================================
         self.Saturation = QtWidgets.QFrame(self.imageProcessingTechniqueContainer)
         self.Saturation.setStyleSheet("")
         self.Saturation.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -130,6 +141,11 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.Saturation, 0, 1, 1, 1)
 
+        self.saturationGesture = QtWidgets.QPushButton(self.Saturation)
+        self.saturationGesture.setGeometry(QtCore.QRect(10, 50, 100, 16))
+        self.saturationGesture.clicked.connect(self.set_gesture_saturation)
+
+        # Image processing technique Image Brightness===============================================================
         self.ImageBrightness = QtWidgets.QFrame(self.imageProcessingTechniqueContainer)
         self.ImageBrightness.setStyleSheet("")
         self.ImageBrightness.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -161,8 +177,13 @@ class Ui_MainWindow(object):
         self.brightnessSlider.setObjectName("brightnessSlider")
         self.brightnessSlider.valueChanged['int'].connect(self.brightness_value)
 
+        self.brightnessGesture = QtWidgets.QPushButton(self.ImageBrightness)
+        self.brightnessGesture.setGeometry(QtCore.QRect(10, 50, 100, 16))
+        self.brightnessGesture.clicked.connect(self.set_gesture_brightness)
+
         self.gridLayout.addWidget(self.ImageBrightness, 0, 2, 1, 1)
 
+        # Image processing technique Contrast===============================================================
         self.ImageNoise = QtWidgets.QFrame(self.imageProcessingTechniqueContainer)
         self.ImageNoise.setStyleSheet("")
         self.ImageNoise.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -194,17 +215,22 @@ class Ui_MainWindow(object):
         self.contrastSlider.setObjectName("contrastSlider")
         self.contrastSlider.valueChanged['int'].connect(self.contrast_value)
 
+        self.contrastGesture = QtWidgets.QPushButton(self.ImageNoise)
+        self.contrastGesture.setGeometry(QtCore.QRect(10, 50, 100, 16))
+        self.contrastGesture.clicked.connect(self.set_gesture_contrast)
+
         self.gridLayout.addWidget(self.ImageNoise, 0, 3, 1, 1)
 
-        self.GrayScale = QtWidgets.QFrame(self.imageProcessingTechniqueContainer)
-        self.GrayScale.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.GrayScale.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.GrayScale.setObjectName("GrayScale")
+        # Image processing technique Sharpen===============================================================
+        self.Sharpen = QtWidgets.QFrame(self.imageProcessingTechniqueContainer)
+        self.Sharpen.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.Sharpen.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.Sharpen.setObjectName("GrayScale")
 
-        self.label_3 = QtWidgets.QLabel(self.GrayScale)
+        self.label_3 = QtWidgets.QLabel(self.Sharpen)
         self.label_3.setGeometry(QtCore.QRect(10, 10, 100, 16))
         self.label_3.setObjectName("label_3")
-        self.sharpenSlider = QtWidgets.QSlider(self.GrayScale)
+        self.sharpenSlider = QtWidgets.QSlider(self.Sharpen)
         self.sharpenSlider.setGeometry(QtCore.QRect(10, 30, 100, 16))
         self.sharpenSlider.setStyleSheet(
             "QSlider::handle:horizontal {\n"
@@ -225,7 +251,12 @@ class Ui_MainWindow(object):
         self.sharpenSlider.setObjectName("brightnessSlider")
         self.sharpenSlider.valueChanged['int'].connect(self.onSharpeningSliderChanged)
 
-        self.gridLayout.addWidget(self.GrayScale, 0, 4, 1, 1)
+        self.sharpenGesture = QtWidgets.QPushButton(self.Sharpen)
+        self.sharpenGesture.setGeometry(QtCore.QRect(10, 50, 100, 16))
+        self.sharpenGesture.clicked.connect(self.set_gesture_sharpening)
+
+        self.gridLayout.addWidget(self.Sharpen, 0, 4, 1, 1)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.actionSave = QtWidgets.QAction(MainWindow)
 
@@ -447,6 +478,11 @@ class Ui_MainWindow(object):
         self.actionOpen_Image.setToolTip(_translate("MainWindow", "Open Image"))
         self.startVideo.setText(_translate("MainWindow", "Open Image"))
         self.actionSaveEdit.setText(_translate("MainWindow", "Save Edit"))
+        self.imageBlurGesture.setText(_translate("MainWindow", "Set Gesture"))
+        self.sharpenGesture.setText(_translate("MainWindow", "Set Gesture"))
+        self.saturationGesture.setText(_translate("MainWindow", "Set Gesture"))
+        self.brightnessGesture.setText(_translate("MainWindow", "Set Gesture"))
+        self.contrastGesture.setText(_translate("MainWindow", "Set Gesture"))
 
     def hand_tracking_handler(self):
         # Angle and length variables
@@ -488,6 +524,24 @@ class Ui_MainWindow(object):
 
         self.setPhoto(img)
 
+    def __set_image_processing_technique_gesture(self, technique: ImageProcessingTechnique):
+        print(f"Setting gesture for {technique}")
+        self.__image_processing_technique = technique
+
+    def set_gesture_brightness(self):
+        self.__set_image_processing_technique_gesture(ImageProcessingTechnique.BRIGHTNESS)
+
+    def set_gesture_blur(self):
+        self.__set_image_processing_technique_gesture(ImageProcessingTechnique.BLUR)
+
+    def set_gesture_saturation(self):
+        self.__set_image_processing_technique_gesture(ImageProcessingTechnique.SATURATION)
+
+    def set_gesture_sharpening(self):
+        self.__set_image_processing_technique_gesture(ImageProcessingTechnique.SHARPENING)
+
+    def set_gesture_contrast(self):
+        self.__set_image_processing_technique_gesture(ImageProcessingTechnique.CONTRAST)
 
 if __name__ == "__main__":
     import sys
