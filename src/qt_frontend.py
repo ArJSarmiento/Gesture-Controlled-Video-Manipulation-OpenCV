@@ -29,7 +29,7 @@ class Ui_MainWindow(object):
         self.sharpening_value_now = None
         self.contrast_value_now = None
 
-        self.__image_processing_technique = ImageProcessingTechnique.BRIGHTNESS
+        self.__image_processing_technique = ImageProcessingTechnique.BLUR
         self.last_length = 0
         self.max_length = 0
 
@@ -539,14 +539,19 @@ class Ui_MainWindow(object):
         """
         computed_value = int(100 * self.last_length / self.max_length)
         if self.__image_processing_technique == ImageProcessingTechnique.BRIGHTNESS:
+            self.brightnessSlider.setValue(computed_value)
             self.brightness_value(computed_value)
         elif self.__image_processing_technique == ImageProcessingTechnique.BLUR:
+            self.imageBlurSlider.setValue(computed_value)
             self.blur_value(computed_value)
         elif self.__image_processing_technique == ImageProcessingTechnique.SATURATION:
+            self.saturationSlider.setValue(computed_value)
             self.saturation_value(computed_value)
         elif self.__image_processing_technique == ImageProcessingTechnique.SHARPENING:
+            self.sharpenSlider.setValue(computed_value)
             self.onSharpeningSliderChanged(computed_value)
         elif self.__image_processing_technique == ImageProcessingTechnique.CONTRAST:
+            self.contrastSlider.setValue(computed_value)
             self.onContrastSliderChanged(computed_value)
 
     def __set_image_processing_technique_gesture(self, technique: ImageProcessingTechnique):
@@ -579,9 +584,18 @@ class Ui_MainWindow(object):
         This function will reset the parameters to the default values
         :return:
         """
+        # Reset the parameters
         self.brightness_value_now = self.default_brightness_value_now
         self.blur_value_now = self.default_blur_value_now
         self.saturation_value_now = self.default_saturation_value_now
         self.sharpening_value_now = self.default_sharpening_value_now
         self.contrast_value_now = self.default_contrast_value_now
+
+        # Reset Sliders
+        self.brightnessSlider.setValue(0)
+        self.imageBlurSlider.setValue(0)
+        self.saturationSlider.setValue(0)
+        self.sharpenSlider.setValue(0)
+        self.contrastSlider.setValue(0)
+
         self.update()
