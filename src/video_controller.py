@@ -1,3 +1,6 @@
+"""
+    VideoController class which is used to apply different image processing techniques to a video feed.
+"""
 import cv2
 import numpy as np
 

@@ -1,3 +1,6 @@
+"""
+    This module contains the code for the graphical user interface of the application.
+"""
 import math
 import time
 
@@ -10,11 +13,6 @@ from hand_tracking import HandDetector
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QImage
 from video_controller import VideoController
-
-try:
-    faceCascade = cv2.CascadeClassifier('Haarcascades/haarcascade_frontalface_default.xml')
-except Exception as e:
-    print('Warning...', e)
 
 
 class Ui_MainWindow(object):
@@ -318,18 +316,6 @@ class Ui_MainWindow(object):
             QtWidgets.QApplication.processEvents()
             img, self.image = vid.read()
             self.image = imutils.resize(self.image, height=480)
-
-            gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-            try:
-                faces = faceCascade.detectMultiScale(
-                    gray, scaleFactor=1.15, minNeighbors=7, minSize=(80, 80), flags=cv2.CASCADE_SCALE_IMAGE
-                )
-
-                for x, y, w, h in faces:
-                    cv2.rectangle(self.image, (x, y), (x + w, y + h), (10, 228, 220), 5)
-
-            except Exception as e:
-                pass
 
             if cnt == frames_to_count:
                 try:  # To avoid divide by 0 we put it in try except
