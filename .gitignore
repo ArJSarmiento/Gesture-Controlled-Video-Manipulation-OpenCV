@@ -7,6 +7,6 @@ my.secrets
 .env
 .env.local
 .DS_STORE
-***__pycache__**
+#***__pycache__**
 venv
 .ruff_cache
