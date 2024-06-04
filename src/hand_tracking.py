@@ -21,9 +21,14 @@ class HandDetector:
         self.mp_draw = mp.solutions.drawing_utils
 
     def find_hands(self, img, draw=True):
+        """
+        This function will take an image and draw the landmarks on the hands
+        :param img: Image
+        :param draw: Boolean
+        :return:
+        """
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.results = self.hands.process(img_rgb)
-        # print(self.results.multi_hand_landmarks)
 
         if self.results.multi_hand_landmarks:
             for hand_lms in self.results.multi_hand_landmarks:
@@ -32,14 +37,19 @@ class HandDetector:
         return img
 
     def find_position(self, img, hand_no=0, draw=True):
+        """
+        This function will take an image and return the landmarks of the hand
+        :param img: Image
+        :param hand_no: Integer
+        :param draw: Boolean
+        :return:
+        """
         lm_list = []
         if self.results.multi_hand_landmarks:
             my_hand = self.results.multi_hand_landmarks[hand_no]
             for id, lm in enumerate(my_hand.landmark):
-                # print(id, lm)
                 h, w, c = img.shape
                 cx, cy = int(lm.x * w), int(lm.y * h)
-                # print(id, cx, cy)
                 lm_list.append([id, cx, cy])
                 if draw:
                     cv2.circle(img, (cx, cy), 15, (255, 0, 255), cv2.FILLED)

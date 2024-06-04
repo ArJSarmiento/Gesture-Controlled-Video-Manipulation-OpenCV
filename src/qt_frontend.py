@@ -37,6 +37,11 @@ class Ui_MainWindow(object):
         self.__hand_detector = HandDetector(detection_con=0.7)
 
     def setupUi(self, MainWindow):
+        """
+        This function will setup the user interface for the application
+        :param MainWindow:
+        :return:
+        """
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(900, 500)
         MainWindow.setMinimumSize(QtCore.QSize(700, 500))
@@ -452,6 +457,11 @@ class Ui_MainWindow(object):
         self.setPhoto(img)
 
     def retranslateUi(self, MainWindow):
+        """
+        This function will set the text and title for the widgets
+        :param MainWindow:
+        :return:
+        """
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "PyShine video process"))
         self.imageProcessingTechniqueContainer.setTitle(_translate("MainWindow", "Image Processing Options"))
@@ -473,6 +483,10 @@ class Ui_MainWindow(object):
         self.contrastGesture.setText(_translate("MainWindow", "Set Gesture"))
 
     def hand_tracking_handler(self):
+        """
+        This function will handle the hand tracking and gesture
+        :return:
+        """
         # Angle and length variables
         min_hand = 50
         max_hand = 300
@@ -519,6 +533,10 @@ class Ui_MainWindow(object):
         self.setPhoto(img)
 
     def gesture_handler(self):
+        """
+        This function will handle the gesture for the image processing techniques
+        :return:
+        """
         computed_value = int(100 * self.last_length / self.max_length)
         if self.__image_processing_technique == ImageProcessingTechnique.BRIGHTNESS:
             self.brightness_value(computed_value)
@@ -532,6 +550,11 @@ class Ui_MainWindow(object):
             self.onContrastSliderChanged(computed_value)
 
     def __set_image_processing_technique_gesture(self, technique: ImageProcessingTechnique):
+        """
+        This function will set the image processing technique for the gesture
+        :param technique
+        :return:
+        """
         print(f"Setting gesture for {technique}")
         self.reset_parameters()
         self.__image_processing_technique = technique
@@ -552,6 +575,10 @@ class Ui_MainWindow(object):
         self.__set_image_processing_technique_gesture(ImageProcessingTechnique.CONTRAST)
 
     def reset_parameters(self):
+        """
+        This function will reset the parameters to the default values
+        :return:
+        """
         self.brightness_value_now = self.default_brightness_value_now
         self.blur_value_now = self.default_blur_value_now
         self.saturation_value_now = self.default_saturation_value_now

@@ -1,6 +1,6 @@
 # Gesture-Controlled Image Manipulation
 
-This project is a gesture-controlled image manipulation program that uses OpenCV to track the user's hand and MediaPipe to detect hand landmarks. The program can detect and track the user's hand in real-time.
+A gesture-controlled image manipulation program that uses OpenCV to track the user's hand and MediaPipe to detect hand landmarks. The program can detect and track the user's hand in real-time.
 
 ## Functionality and Features
 - Adjust the following parameters in live video:
